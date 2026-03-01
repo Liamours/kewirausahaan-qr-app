@@ -21,23 +21,23 @@ class FaceFilterProcessor(VideoProcessorBase):
         img = cv2.flip(img, 1)
 
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = self.face_mesh.process(rgb)
+        result = self.face_mesh.process(rgb)
 
-        if results.multi_face_landmarks:
-            for face_landmarks in results.multi_face_landmarks:
+        if result.face_landmarks:
+            for landmarks in result.face_landmarks:
                 if self.show_mesh:
-                    img = draw_landmarks(img, results)
+                    img = draw_landmarks(img, result)
 
                 if self.active_filter == "hat" and self.hat_asset is not None:
-                    img = apply_hat(img, face_landmarks, self.hat_asset, self.hat_scale)
+                    img = apply_hat(img, landmarks, self.hat_asset, self.hat_scale)
 
                 elif self.active_filter == "sunglasses" and self.glasses_asset is not None:
-                    img = apply_sunglasses(img, face_landmarks, self.glasses_asset, self.glasses_scale)
+                    img = apply_sunglasses(img, landmarks, self.glasses_asset, self.glasses_scale)
 
                 elif self.active_filter == "both":
                     if self.hat_asset is not None:
-                        img = apply_hat(img, face_landmarks, self.hat_asset, self.hat_scale)
+                        img = apply_hat(img, landmarks, self.hat_asset, self.hat_scale)
                     if self.glasses_asset is not None:
-                        img = apply_sunglasses(img, face_landmarks, self.glasses_asset, self.glasses_scale)
+                        img = apply_sunglasses(img, landmarks, self.glasses_asset, self.glasses_scale)
 
         return av.VideoFrame.from_ndarray(img, format="bgr24")
