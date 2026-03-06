@@ -14,6 +14,7 @@ class FaceFilterProcessor(VideoProcessorBase):
         self._lock = threading.Lock()
         self._snapshot = None
         self._gif_idx = 0
+        self._last_landmarks = []
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
         img = frame.to_ndarray(format="bgr24")
@@ -24,13 +25,15 @@ class FaceFilterProcessor(VideoProcessorBase):
         result = self.face_mesh.process(rgb)
 
         if result.face_landmarks:
-            for landmarks in result.face_landmarks:
-                if self.mode == "hat":
-                    img = apply_hat(img, landmarks, self.assets["hat"])
-                elif self.mode == "mustache":
-                    img = apply_mustache(img, landmarks, self.assets["mustache"])
-                elif self.mode == "milky":
-                    img = apply_gif(img, landmarks, self.assets["milky"], self._gif_idx)
+            self._last_landmarks = result.face_landmarks
+
+        for landmarks in self._last_landmarks:
+            if self.mode == "hat":
+                img = apply_hat(img, landmarks, self.assets["hat"])
+            elif self.mode == "mustache":
+                img = apply_mustache(img, landmarks, self.assets["mustache"])
+            elif self.mode == "milky":
+                img = apply_gif(img, landmarks, self.assets["milky"], self._gif_idx)
 
         if self.mode == "milky":
             self._gif_idx += 1
