@@ -19,7 +19,8 @@ class FaceFilterProcessor(VideoProcessorBase):
         img = frame.to_ndarray(format="bgr24")
         img = cv2.flip(img, 1)
 
-        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        small = cv2.resize(img, (640, 360))
+        rgb = cv2.cvtColor(small, cv2.COLOR_BGR2RGB)
         result = self.face_mesh.process(rgb)
 
         if result.face_landmarks:

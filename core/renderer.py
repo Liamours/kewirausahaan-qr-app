@@ -36,25 +36,21 @@ def _lm(landmarks, idx, fw, fh):
     return int(lm.x * fw), int(lm.y * fh)
 
 
-def draw_landmarks(frame, detection_result):
-    if not detection_result.face_landmarks:
-        return frame
-    fh, fw = frame.shape[:2]
-    for landmarks in detection_result.face_landmarks:
-        for lm in landmarks:
-            cx, cy = int(lm.x * fw), int(lm.y * fh)
-            cv2.circle(frame, (cx, cy), 1, (0, 255, 0), -1)
-    return frame
+def _stable_angle(landmarks, fw, fh):
+    lx, ly = _lm(landmarks, 234, fw, fh)
+    rx, ry = _lm(landmarks, 454, fw, fh)
+    return -np.degrees(np.arctan2(ry - ly, rx - lx))
 
 
-def apply_hat(frame, landmarks, asset_img, scale=1.3):
+def apply_hat(frame, landmarks, asset_img, scale=1.4):
     fh, fw = frame.shape[:2]
     lx, ly = _lm(landmarks, 234, fw, fh)
     rx, ry = _lm(landmarks, 454, fw, fh)
     tx, ty = _lm(landmarks, 10,  fw, fh)
 
     face_width = int(np.linalg.norm([rx - lx, ry - ly]))
-    angle = -np.degrees(np.arctan2(ry - ly, rx - lx))
+    ty = ty - int(face_width * 0.05)
+    angle = _stable_angle(landmarks, fw, fh)
     cx = (lx + rx) // 2
 
     return overlay_asset(frame, asset_img, cx, ty, face_width, angle, scale)

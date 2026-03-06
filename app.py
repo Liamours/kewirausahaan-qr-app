@@ -98,7 +98,7 @@ ctx = webrtc_streamer(
     mode=WebRtcMode.SENDRECV,
     rtc_configuration=RTC_CONFIG,
     video_processor_factory=lambda: FaceFilterProcessor(assets),
-    media_stream_constraints={"video": {"width": 1280, "height": 720}, "audio": False},
+    media_stream_constraints={"video": {"width": {"ideal": 640}, "height": {"ideal": 480}}, "audio": False},
     async_processing=True,
     desired_playing_state=True,
 )
