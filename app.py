@@ -82,7 +82,7 @@ FILTER_OPTIONS = {
 }
 
 selected_label = st.radio(
-    "",
+    "Filter",
     list(FILTER_OPTIONS.keys()),
     horizontal=True,
     label_visibility="collapsed",
