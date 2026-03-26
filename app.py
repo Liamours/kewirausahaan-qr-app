@@ -47,7 +47,7 @@ def load_assets():
     def load_png(path):
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
         if img is None:
-            st.error(f"Could not load: {path}")
+            st.error(f"Could not load asset: {path}")
             st.stop()
         if img.shape[2] == 3:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
@@ -89,8 +89,13 @@ selected_label = st.radio(
 )
 selected_mode = FILTER_OPTIONS[selected_label]
 
+# Multiple STUN servers for better connectivity on Streamlit Cloud
 RTC_CONFIG = RTCConfiguration({
-    "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+    "iceServers": [
+        {"urls": ["stun:stun.l.google.com:19302"]},
+        {"urls": ["stun:stun1.l.google.com:19302"]},
+        {"urls": ["stun:stun2.l.google.com:19302"]},
+    ]
 })
 
 ctx = webrtc_streamer(
@@ -98,9 +103,10 @@ ctx = webrtc_streamer(
     mode=WebRtcMode.SENDRECV,
     rtc_configuration=RTC_CONFIG,
     video_processor_factory=lambda: FaceFilterProcessor(assets),
-    media_stream_constraints={"video": {"width": {"ideal": 640}, "height": {"ideal": 480}}, "audio": False},
-    async_processing=True,
-    desired_playing_state=True,
+    media_stream_constraints={
+        "video": {"width": {"ideal": 640}, "height": {"ideal": 480}},
+        "audio": False,
+    },
 )
 
 if ctx.video_processor:
