@@ -91,7 +91,7 @@ class TestConfigFiles:
     def test_packages_txt_has_libglib(self):
         with open(os.path.join(ROOT, "packages.txt")) as f:
             pkgs = [l.strip() for l in f if l.strip()]
-        has_glib = any("libglib" in p for p in pkgs)
+        has_glib = any("libglib2.0-0t64" in p for p in pkgs)
         assert has_glib, \
             "libglib missing from packages.txt — mediapipe requires it on Linux"
 
